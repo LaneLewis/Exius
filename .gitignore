@@ -1,1 +1,3 @@
-rclone.conf docker-compose.yml fly.toml
+rclone.conf
+fly.toml
+.DS_Store
