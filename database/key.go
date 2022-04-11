@@ -214,10 +214,11 @@ func GetPutAndPath(keyValue string, endpoint string, db *DB) (path string, truth
 		&putTypes,
 		&maxPutSize,
 	)
+	db.Lock.Unlock()
+	fmt.Println(maxPutSize)
 	if err != nil {
 		return path, truth, putTypes, maxPutSize, errors.New("error getting rows")
 	}
-	db.Lock.Unlock()
 	if expireStarted && int64(time.Now().UnixMilli())-(expireStart+expireDelta) > 0 {
 		err = DeleteKey(keyValue, db)
 		if err != nil {
@@ -265,14 +266,12 @@ func GetMkcolAndPath(keyValue string, endpoint string, db *DB) (path string, tru
 }
 
 func GetAndPath(keyValue string, endpoint string, db *DB) (path string, truth bool, err error) {
-	fmt.Println("hit path")
 	var expireStart int64
 	var expireDelta int64
 	var maxGet int
 	var getCount int
 	var expireStarted bool
 	db.Lock.Lock()
-	fmt.Println(endpoint)
 	err = db.Conn.QueryRow(context.Background(), `
 		select Endpoints -> $1 -> 'Path',
 		Endpoints -> $1 -> 'Get',
@@ -300,8 +299,6 @@ func GetAndPath(keyValue string, endpoint string, db *DB) (path string, truth bo
 		}
 		return path, truth, errors.New("key is expired")
 	}
-	fmt.Println(getCount)
-	fmt.Println(maxGet)
 	if getCount >= maxGet {
 		return path, truth, errors.New("get exceeds maxGet")
 	}
@@ -332,12 +329,13 @@ func IteratePut(keyValue string, endpoint string, db *DB) error {
 			if err != nil {
 				return err
 			}
-		} else {
-			command := `update keys set Endpoints=jsonb_set(Endpoints, '{` + endpoint + `, PutCount}', ($2::TEXT)::jsonb) where KeyValue=$1;`
-			_, err = db.Conn.Exec(context.Background(), command, keyValue, strconv.Itoa(putCount+1))
-			if err != nil {
-				return err
-			}
+			return nil
+		}
+	} else {
+		command := `update keys set Endpoints=jsonb_set(Endpoints, '{` + endpoint + `, PutCount}', ($2::TEXT)::jsonb) where KeyValue=$1;`
+		_, err = db.Conn.Exec(context.Background(), command, keyValue, strconv.Itoa(putCount+1))
+		if err != nil {
+			return err
 		}
 	}
 	return nil
@@ -367,14 +365,16 @@ func IterateMkcol(keyValue string, endpoint string, db *DB) error {
 			if err != nil {
 				return err
 			}
-		} else {
-			command := `update keys set Endpoints=jsonb_set(Endpoints, '{` + endpoint + `, MkcolCount}', ($2::TEXT)::jsonb) where KeyValue=$1;`
-			_, err = db.Conn.Exec(context.Background(), command, keyValue, strconv.Itoa(mkcolCount+1))
-			if err != nil {
-				return err
-			}
+			return nil
+		}
+	} else {
+		command := `update keys set Endpoints=jsonb_set(Endpoints, '{` + endpoint + `, MkcolCount}', ($2::TEXT)::jsonb) where KeyValue=$1;`
+		_, err = db.Conn.Exec(context.Background(), command, keyValue, strconv.Itoa(mkcolCount+1))
+		if err != nil {
+			return err
 		}
 	}
+
 	return nil
 }
 
@@ -402,13 +402,15 @@ func IterateGet(keyValue string, endpoint string, db *DB) error {
 			if err != nil {
 				return err
 			}
-		} else {
-			command := `update keys set Endpoints=jsonb_set(Endpoints, '{` + endpoint + `, GetCount}', ($2::TEXT)::jsonb) where KeyValue=$1;`
-			_, err = db.Conn.Exec(context.Background(), command, keyValue, strconv.Itoa(getCount+1))
-			if err != nil {
-				return err
-			}
+			return nil
 		}
+	} else {
+		command := `update keys set Endpoints=jsonb_set(Endpoints, '{` + endpoint + `, GetCount}', ($2::TEXT)::jsonb) where KeyValue=$1;`
+		_, err = db.Conn.Exec(context.Background(), command, keyValue, strconv.Itoa(getCount+1))
+		if err != nil {
+			return err
+		}
+
 	}
 	return nil
 }

@@ -32,7 +32,7 @@ type ClientKeySet struct {
 type ClientEndpoint struct {
 	MaxMkcol   uint
 	MaxPut     uint
-	MaxPutSize uint64
+	MaxPutSize int64
 	MaxGet     uint
 	Path       string
 	PutTypes   []string
@@ -61,7 +61,7 @@ func getClientEndpoint(keyValue string, db *database.DB) (clientKey ClientKeySet
 		clientEndpoint := ClientEndpoint{
 			MaxMkcol:   uint(endpoint.MaxMkcol),
 			MaxPut:     uint(endpoint.MaxPut),
-			MaxPutSize: uint64(endpoint.MaxPutSize),
+			MaxPutSize: int64(endpoint.MaxPutSize),
 			MaxGet:     uint(endpoint.MaxGet),
 			Path:       endpoint.Path,
 			PutTypes:   endpoint.PutTypes,
@@ -144,7 +144,7 @@ func parseClientJson(r *http.Request) (keyset ClientKeySet, err error) {
 		defaultEndpoint := ClientEndpoint{
 			MaxMkcol:   2147483647,
 			MaxPut:     2147483647,
-			MaxPutSize: 2147483647,
+			MaxPutSize: 9223372036854775807,
 			MaxGet:     2147483647,
 			Path:       "",
 			PutTypes:   []string{"any"},

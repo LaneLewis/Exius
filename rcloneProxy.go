@@ -52,6 +52,7 @@ func main() {
 			err = handles.AuthenticateAndRoute("Copy", db, w, r)
 			if err != nil {
 				log.Println("failed to COPY: ", r.URL, ".", err)
+				return
 			}
 		})
 
@@ -60,6 +61,7 @@ func main() {
 			err = handles.AuthenticateAndRoute("Del", db, w, r)
 			if err != nil {
 				log.Println("failed to DELETE: ", r.URL, ".", err)
+				return
 			}
 		})
 
@@ -69,6 +71,7 @@ func main() {
 			err = handles.AuthenticateAndRoute("Get", db, w, r)
 			if err != nil {
 				log.Println("failed to GET: ", r.URL, ".", err)
+				return
 			}
 		})
 
@@ -77,6 +80,7 @@ func main() {
 			err = handles.AuthenticateAndRoute("Head", db, w, r)
 			if err != nil {
 				log.Println("failed to HEAD: ", r.URL, ".", err)
+				return
 			}
 		})
 
@@ -85,6 +89,7 @@ func main() {
 			err = handles.AuthenticateAndRoute("Lock", db, w, r)
 			if err != nil {
 				log.Println("failed to LOCK: ", r.URL, ".", err)
+				return
 			}
 		})
 
@@ -93,6 +98,7 @@ func main() {
 			err = handles.AuthenticateAndRoute("Mkcol", db, w, r)
 			if err != nil {
 				log.Println("failed to MKCOL: ", r.URL, ".", err)
+				return
 			}
 		})
 
@@ -101,6 +107,7 @@ func main() {
 			err = handles.AuthenticateAndRoute("Move", db, w, r)
 			if err != nil {
 				log.Println("failed to MOVE: ", r.URL, ".", err)
+				return
 			}
 		})
 
@@ -109,6 +116,7 @@ func main() {
 			err = handles.AuthenticateAndRoute("Options", db, w, r)
 			if err != nil {
 				log.Println("failed to OPTIONS: ", r.URL, ".", err)
+				return
 			}
 		})
 
@@ -117,6 +125,7 @@ func main() {
 			err = handles.AuthenticateAndRoute("Post", db, w, r)
 			if err != nil {
 				log.Println("failed to POST: ", r.URL, ".", err)
+				return
 			}
 		})
 
@@ -125,6 +134,7 @@ func main() {
 			err = handles.AuthenticateAndRoute("Propfind", db, w, r)
 			if err != nil {
 				log.Println("failed to PROPFIND: ", r.URL, ".", err)
+				return
 			}
 		})
 
@@ -133,6 +143,7 @@ func main() {
 			err = handles.AuthenticateAndRoute("Put", db, w, r)
 			if err != nil {
 				log.Println("failed to PUT: ", r.URL, ".", err)
+				return
 			}
 		})
 
@@ -141,6 +152,7 @@ func main() {
 			err = handles.AuthenticateAndRoute("Trace", db, w, r)
 			if err != nil {
 				log.Println("failed to TRACE: ", r.URL, ".", err)
+				return
 			}
 		})
 
@@ -149,6 +161,7 @@ func main() {
 			err = handles.AuthenticateAndRoute("Unlock", db, w, r)
 			if err != nil {
 				log.Println("failed to UNLOCK: ", r.URL, ".", err)
+				return
 			}
 		})
 
@@ -156,6 +169,7 @@ func main() {
 		err = handles.AddKeyHandle(db, w, r)
 		if err != nil {
 			log.Println("failed to addKey:", r.URL, ".", err)
+			return
 		} else {
 			log.Println("successful addKey:", r.URL)
 		}
@@ -165,6 +179,7 @@ func main() {
 		err = handles.GetKeyHandle(db, w, r)
 		if err != nil {
 			log.Println("failed to getKey:", r.URL, ".", err)
+			return
 		} else {
 			log.Println("successful getKey:", r.URL)
 		}
@@ -174,6 +189,7 @@ func main() {
 		err = handles.DeleteKeyHandle(db, w, r)
 		if err != nil {
 			log.Println("failed to deleteKey:", r.URL, ".", err)
+			return
 		} else {
 			log.Println("successful deleteKey:", r.URL)
 		}
@@ -183,6 +199,7 @@ func main() {
 		err = handles.GetChildrenHandle(db, w, r)
 		if err != nil {
 			log.Println("failed to getChildKeys:", r.URL, ".", err)
+			return
 		} else {
 			log.Println("successful getChildKeys", r.URL)
 		}
@@ -192,6 +209,7 @@ func main() {
 		err = handles.AdminHandle(db, w, r)
 		if err != nil {
 			log.Println("failed to admin:", r.URL, ".", err)
+			return
 		} else {
 			log.Println("successful admin", r.URL)
 		}
