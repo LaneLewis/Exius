@@ -1,0 +1,20 @@
+version: "3"
+services:
+  project:
+    build: "./"
+    expose:
+      - 8080
+      - 8081
+    environment:
+      - CONFIGNAME=data
+      - ADMINKEY=1234
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
+    ports:
+      - "8080:8080"
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+      - "5432:5432"
