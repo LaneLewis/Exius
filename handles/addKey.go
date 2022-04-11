@@ -268,6 +268,7 @@ func ValidateChildKey(childKey ClientKeySet, parentKey ClientKeySet) (validKey d
 		validEndpoint := database.Endpoint{
 			MaxMkcol:   int(endpoint.MaxMkcol),
 			MaxPut:     int(endpoint.MaxPut),
+			MaxPutSize: int64(endpoint.MaxPutSize),
 			MaxGet:     int(endpoint.MaxGet),
 			MkcolCount: 0,
 			Path:       absoluteChildPath,
