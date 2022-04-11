@@ -1,0 +1,35 @@
+[Box_Data]
+type = box
+token = {"access_token":"CStmkUqbzUZ1vijvU0e9ShSxQ9fXb4hx","token_type":"bearer","refresh_token":"0na3vFEq4tClhkVWdEYKvXHhyS5vNJmjDbuhNtT70htH1frsk2ES3raeWFrMKEsp","expiry":"2022-04-10T20:31:40.773253-07:00"}
+
+[Box-Data]
+type = box
+token = {"access_token":"n1USNLPe89veqZvI4fEpZ1h493NV62M9","token_type":"bearer","refresh_token":"7WhiTPV1kGAt27GwS7JmftkoZWzV79hqRKqTNhB3sy3s58ogG2hpOkR9FpoYlMwG","expiry":"2022-04-10T19:14:21.819452-07:00"}
+
+[button-task]
+type = webdav
+url = q
+vendor = other
+user = hello
+pass = R8n55Cbs_0eHz9ndRaO5ZYZJwEIBXtyUKkqMgP75j4abaoDrF2rCsC58MynfFL5RuqZdyw6QUdL7uQr53nYSU8NfQ6xShf3hk9TYep95kx0
+
+[psychosite]
+type = local
+token = 
+
+[psychosite1]
+type = alias
+remote = ./data
+token = 
+
+[hello]
+type = drive
+token = 
+team_drive = 
+scope = drive.appfolder
+root_folder_id = appDataFolder
+
+[hellow]
+type = box
+token = {"access_token":"60zaXztehwV7knTsGzhrptVF8DrGxWzB","token_type":"bearer","refresh_token":"7xxAy30NQtXihfsxow8sJDIouq8yVc9EatMvV2cxFIQJW9syYwokSiJLnFMrx4ZV","expiry":"2022-04-10T20:17:50.6288-07:00"}
+
