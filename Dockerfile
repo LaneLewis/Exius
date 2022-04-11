@@ -21,6 +21,6 @@ RUN apk update \
 COPY initiate.sh /app/initiate.sh
 COPY ["./rclone.conf","/root/.config/rclone/rclone.conf"]
 COPY --from=builder /rclone-proxy /rclone-proxy
-COPY ./data /app/data
+COPY /data /app/data
 CMD /bin/sh /app/initiate.sh
 EXPOSE 8080
