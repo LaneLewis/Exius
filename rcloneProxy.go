@@ -13,18 +13,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// add lambda (webhook?) type functionality where when an endpoint is hit, build
-// endpoint with highly restricted functionality!!
-
-// serving files from box, using rclone to sync with a webdav built by server locally. This
-// would give github like funcitonality just from an installation of rclone
-
-// enforce upload type [.csv, .json, etc], enforce size <x
-// how to do upload if two endpoints are called the same
-// make endpoint name? then waterfall permissions off of them.
-
-//send req from internal port to 8080, get response, filter, then send to client for propfind
-
+//todo: change all to unsigned int
+// add ability for multiple rclone endpoints. Use inside endpoin and append to prefix
 func main() {
 	adminKey := os.Getenv("ADMINKEY")
 	url := os.Getenv("DATABASE_URL") //"postgres://postgres:postgres@db:5432/postgres"
@@ -214,6 +204,7 @@ func main() {
 			log.Println("successful admin", r.URL)
 		}
 	})
+
 	handler := cors.Default().Handler(router)
 	srv := &http.Server{
 		Handler: handler,
