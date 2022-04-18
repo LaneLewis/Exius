@@ -42,7 +42,7 @@ func serveProxy(target string, path string, method string, key string, endpoint 
 	} else {
 		proxy.ServeHTTP(res, req)
 	}
-	fmt.Println("reverse-proxy: ", originalURL, " -> ", req.URL)
+	log.Println("reverse-proxy: ", originalURL, " -> ", req.URL)
 }
 
 func AuthenticateAndRoute(field string, db *database.DB, w http.ResponseWriter, r *http.Request) (err error) {
@@ -82,12 +82,10 @@ func AuthenticateAndRoute(field string, db *database.DB, w http.ResponseWriter, 
 	}
 	proxyPath = strings.Trim(proxyPath, `"`)
 	if err != nil || !access {
-		fmt.Println(err)
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return errors.New("no access to method")
 	}
 	targetString := proxyURL
-	fmt.Println("serving stuff")
 	if proxyPath == "/" {
 		serveProxy(targetString, strings.Join(origPath[2:], "/"), field, password, origPath[1], db, w, r)
 	} else {
@@ -116,7 +114,6 @@ func propfindProxyResp(originalURL string) func(res *http.Response) error {
 func putProxyResp(key string, endpoint string, db *database.DB) func(res *http.Response) error {
 	return func(res *http.Response) error {
 		if res.StatusCode == 200 || res.StatusCode == 201 {
-			fmt.Println("good put")
 			err := database.IteratePut(key, endpoint, db)
 			if err != nil {
 				return err
@@ -165,7 +162,6 @@ func isFileValid(fileTypes []string, maxFileSize int64, w http.ResponseWriter, r
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		r.Body = ioutil.NopCloser(bytes.NewBuffer(b))
-		fmt.Println("err1", err)
 		return false
 	}
 	_, anyInTypes := contains(fileTypes, "any")

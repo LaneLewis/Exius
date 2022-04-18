@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -55,6 +56,10 @@ type KeySet struct {
 }
 
 func AddKey(keyset KeySet, db *DB) (err error) {
+	err = PingReconnect(db)
+	if err != nil {
+		return err
+	}
 	db.Lock.Lock()
 	defer db.Lock.Unlock()
 	b, err := json.Marshal(keyset.Endpoints)
@@ -69,6 +74,10 @@ func AddKey(keyset KeySet, db *DB) (err error) {
 }
 
 func GetKey(keyValue string, db *DB) (keySet KeySet, err error) {
+	err = PingReconnect(db)
+	if err != nil {
+		return keySet, err
+	}
 	db.Lock.Lock()
 	defer db.Lock.Unlock()
 	err = db.Conn.QueryRow(context.Background(), "select * from keys where KeyValue=$1;", keyValue).Scan(
@@ -89,6 +98,10 @@ func GetKey(keyValue string, db *DB) (keySet KeySet, err error) {
 }
 
 func DeleteKey(keyValue string, db *DB) (err error) {
+	err = PingReconnect(db)
+	if err != nil {
+		return err
+	}
 	db.Lock.Lock()
 	defer db.Lock.Unlock()
 	_, err = db.Conn.Exec(context.Background(), "DELETE from keys where KeyValue=$1;", keyValue)
@@ -98,7 +111,7 @@ func DeleteKey(keyValue string, db *DB) (err error) {
 	return nil
 }
 func InitiateConnect(url string, timeOut time.Duration) (conn *pgx.Conn, err error) {
-	ticker := time.NewTicker(5 * time.Second)
+	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 	timeoutTriggered := time.After(timeOut)
 	for {
@@ -152,6 +165,10 @@ func DestroyDB(url string) error {
 }
 
 func GetEndpointNames(keyValue string, db *DB) (names []string, err error) {
+	err = PingReconnect(db)
+	if err != nil {
+		return names, err
+	}
 	db.Lock.Lock()
 	defer db.Lock.Unlock()
 	err = db.Conn.QueryRow(context.Background(), "select ARRAY(select jsonb_object_keys(Endpoints) from keys where KeyValue=$1);", keyValue).Scan(&names)
@@ -166,6 +183,10 @@ func GetBoolFieldAndPath(keyValue string, endpoint string, field string, db *DB)
 	var expireStart int64
 	var expireDelta int64
 	var expireStarted bool
+	err = PingReconnect(db)
+	if err != nil {
+		return path, truth, err
+	}
 	db.Lock.Lock()
 	err = db.Conn.QueryRow(context.Background(), "select Endpoints -> $1 -> 'Path', Endpoints -> $1 -> $2, ExpireDelta, ExpireStartTime, ExpireStarted from keys where KeyValue=$3", endpoint, field, keyValue).Scan(
 		&path,
@@ -192,6 +213,10 @@ func GetPutAndPath(keyValue string, endpoint string, db *DB) (path string, truth
 	var maxPut int
 	var putCount int
 	var expireStarted bool
+	err = PingReconnect(db)
+	if err != nil {
+		return path, truth, putTypes, maxPutSize, err
+	}
 	db.Lock.Lock()
 	err = db.Conn.QueryRow(context.Background(), `
 		select Endpoints -> $1 -> 'Path',
@@ -215,7 +240,6 @@ func GetPutAndPath(keyValue string, endpoint string, db *DB) (path string, truth
 		&maxPutSize,
 	)
 	db.Lock.Unlock()
-	fmt.Println(maxPutSize)
 	if err != nil {
 		return path, truth, putTypes, maxPutSize, errors.New("error getting rows")
 	}
@@ -238,6 +262,10 @@ func GetMkcolAndPath(keyValue string, endpoint string, db *DB) (path string, tru
 	var maxMkcol int
 	var mkcolCount int
 	var expireStarted bool
+	err = PingReconnect(db)
+	if err != nil {
+		return path, truth, err
+	}
 	db.Lock.Lock()
 	err = db.Conn.QueryRow(context.Background(), `
 		select Endpoints -> $1 -> 'Path',
@@ -271,6 +299,10 @@ func GetAndPath(keyValue string, endpoint string, db *DB) (path string, truth bo
 	var maxGet int
 	var getCount int
 	var expireStarted bool
+	err = PingReconnect(db)
+	if err != nil {
+		return path, truth, err
+	}
 	db.Lock.Lock()
 	err = db.Conn.QueryRow(context.Background(), `
 		select Endpoints -> $1 -> 'Path',
@@ -383,8 +415,12 @@ func IterateGet(keyValue string, endpoint string, db *DB) error {
 	var initiateExpire string
 	var getCount int
 	var expireStarted bool
+	err := PingReconnect(db)
+	if err != nil {
+		return err
+	}
 	db.Lock.Lock()
-	err := db.Conn.QueryRow(context.Background(), `
+	err = db.Conn.QueryRow(context.Background(), `
 		select
 		ExpireStartTime,
 		InitiateExpire,
@@ -421,13 +457,17 @@ func ClearExpiredKeys(db *DB) {
 		for {
 			select {
 			case <-ticker.C:
+				err := PingReconnect(db)
+				if err != nil {
+					log.Println("error when deleting expired keys:", err)
+				}
 				db.Lock.Lock()
-				_, err := db.Conn.Exec(context.Background(), "DELETE from keys where ExpireStarted=true AND ExpireStartTime+ExpireDelta < $1;", time.Now().UnixMilli())
+				_, err = db.Conn.Exec(context.Background(), "DELETE from keys where ExpireStarted=true AND ExpireStartTime+ExpireDelta < $1;", time.Now().UnixMilli())
 				db.Lock.Unlock()
 				if err != nil {
-					fmt.Println("error when deleting expired keys:", err)
+					log.Println("error when deleting expired keys:", err)
 				} else {
-					fmt.Println("deleted expired keys")
+					log.Println("deleted expired keys")
 				}
 			case <-quit:
 				ticker.Stop()
@@ -470,12 +510,30 @@ func AddAdmin(adminKey string, db *DB) (err error) {
 		ExpireStarted:   false,
 		ExpireStartTime: 0,
 	}
+	err = PingReconnect(db)
+	if err != nil {
+		return err
+	}
 	err = AddKey(baseKey, db)
 	if err != nil {
 		if strings.Contains(fmt.Sprint(err), "23505") {
 			return errors.New("admin key already exists")
 		}
 		return err
+	}
+	return nil
+}
+
+func PingReconnect(db *DB) error {
+	err := db.Conn.Ping(context.Background())
+	if err != nil {
+		log.Println("ping attempted")
+		conn, err := InitiateConnect(os.Getenv("DATABASE_URL"), 10*time.Second)
+		if err != nil {
+			return err
+		}
+		db.Conn = conn
+		log.Println("re-established connection")
 	}
 	return nil
 }

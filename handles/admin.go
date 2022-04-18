@@ -3,6 +3,7 @@ package handles
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -40,6 +41,6 @@ func adminProxy(res http.ResponseWriter, req *http.Request) {
 	req.URL.Scheme = url.Scheme
 	req.Header.Set("X-Forwarded-Host", req.Header.Get("Host"))
 	req.Host = url.Host
-	fmt.Println("reverse-proxy: ", originalURL, " -> ", req.URL)
+	log.Println("reverse-proxy: ", originalURL, " -> ", req.URL)
 	proxy.ServeHTTP(res, req)
 }

@@ -6,7 +6,6 @@ require (
 	github.com/go-playground/validator/v10 v10.10.1
 	github.com/gorilla/mux v1.8.0
 	github.com/jackc/pgx/v4 v4.15.0
-	github.com/mattn/go-sqlite3 v1.14.12
 	github.com/rs/cors v1.8.2
 	github.com/sethvargo/go-password v0.2.0
 )

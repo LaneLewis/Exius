@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,7 +15,7 @@ import (
 )
 
 //todo: change all to unsigned int
-// add ability for multiple rclone endpoints. Use inside endpoin and append to prefix
+// add ability for multiple rclone endpoints. Use inside endpoint and append to prefix
 func main() {
 	adminKey := os.Getenv("ADMINKEY")
 	url := os.Getenv("DATABASE_URL") //"postgres://postgres:postgres@db:5432/postgres"
@@ -35,6 +36,7 @@ func main() {
 	} else {
 		log.Println("added admin key")
 	}
+	db.Conn.Close(context.Background())
 	router := mux.NewRouter()
 
 	router.PathPrefix("/files/").Methods("COPY").HandlerFunc(
@@ -57,7 +59,6 @@ func main() {
 
 	router.PathPrefix("/files/").Methods("GET").HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			fmt.Println("get hit")
 			err = handles.AuthenticateAndRoute("Get", db, w, r)
 			if err != nil {
 				log.Println("failed to GET: ", r.URL, ".", err)

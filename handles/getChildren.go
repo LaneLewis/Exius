@@ -105,6 +105,10 @@ func isKeyChild(childKey database.KeySet, parentKey database.KeySet) (truth bool
 }
 
 func IterateDB(parentKey database.KeySet, db *database.DB) (err error, keyMap map[string][]PathObj) {
+	err = database.PingReconnect(db)
+	if err != nil {
+		return err, keyMap
+	}
 	db.Lock.Lock()
 	rows, err := db.Conn.Query(context.Background(), "SELECT * FROM keys")
 	if err != nil {
