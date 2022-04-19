@@ -206,8 +206,10 @@ func main() {
 			log.Println("successful admin", r.URL)
 		}
 	})
-
-	handler := cors.Default().Handler(router)
+	c := cors.New(cors.Options{AllowOriginFunc: func(origin string) bool {
+		return true
+	}})
+	handler := c.Handler(router)
 	srv := &http.Server{
 		Handler: handler,
 		Addr:    "0.0.0.0:8080",
