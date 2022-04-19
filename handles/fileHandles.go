@@ -52,7 +52,7 @@ func AuthenticateAndRoute(field string, db *database.DB, w http.ResponseWriter, 
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return errors.New("no basic auth passed")
 	}
-	origPath := strings.Split(r.URL.String(), "/")[1:]
+	origPath := strings.Split(r.URL.Path, "/")[1:]
 	if len(origPath) < 2 {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return errors.New("invalid URL")

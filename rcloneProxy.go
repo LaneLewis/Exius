@@ -14,6 +14,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
+//filename on stat shows full path
 //todo: change all to unsigned int
 // add ability for multiple rclone endpoints. Use inside endpoint and append to prefix
 func main() {
