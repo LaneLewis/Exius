@@ -18,6 +18,7 @@ FROM alpine:latest
 RUN apk update \
     && apk upgrade \
     && apk add rclone
+RUN rclone selfupdate
 COPY initiate.sh /app/initiate.sh
 COPY ["./rclone.conf","/root/.config/rclone/rclone.conf"]
 COPY --from=builder /rclone-proxy /rclone-proxy
