@@ -226,7 +226,7 @@ func ValidateChildKey(childKey ClientKeySet, parentKey ClientKeySet) (validKey d
 	if childKey.ExpireDelta > parentKey.ExpireDelta {
 		return validKey, errors.New("timeDelta of child exceeds parent")
 	}
-	if !validChildFieldPermission(parentKey.CanCreateChild, childKey.CanCreateChild) {
+	if !parentKey.CanCreateChild{
 		return validKey, errors.New("parent key does not have the ability to create children")
 	}
 	validKeyMap := make(map[string]database.Endpoint)
