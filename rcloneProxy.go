@@ -20,7 +20,7 @@ import (
 func main() {
 	adminKey := os.Getenv("ADMINKEY")
 	url := os.Getenv("DATABASE_URL") //"postgres://postgres:postgres@db:5432/postgres"
-	err := database.DestroyDB(url)
+	//err := database.DestroyDB(url)
 	db, err := database.BuildDB(url)
 	database.ClearExpiredKeys(db)
 	if err != nil {
