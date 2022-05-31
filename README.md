@@ -20,7 +20,7 @@ The most important and complex of the endpoints is addKey. All parameters of the
 
 JSON Parameters
 | JSON Field | Required | Type | Default | Description |
-| --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- |
 | /CanCreateChild | false | BOOL | false | Is the key able to create other keys with lesser or equal permisssions |
 | /InitiateExpire | false | STRING (Creation,Get, Mkcol, Never,Put) | Creation | Webdav or key creation as action to start the timer for the key to expire |
 | /ExpireDelta | false | POSITIVE INT64 | 3600000 | Milliseconds until the key expires from the initiation specified |
@@ -28,7 +28,7 @@ JSON Parameters
 
 Endpoint parameters
 | JSON Field | Required | Type | Default | Description |
-| --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- |
 | /Endpoints/{endpoint}/Path | true | STRING | "" | Relative folder path from access key that this key will have access to. Must be a relative path from an endpoint of the access key. |
 | /Endpoints/{endpoint}/MaxMkcol | false | POSITIVE INT32 | 2147483647 | Maximum number of directories that can be created by this key on this endpoint|
 | /Endpoints/{endpoint}/MaxPut | false | POSITIVE INT32 | 2147483647 | Maximum number of PUT operations that can be done by this key on this endpoint|
